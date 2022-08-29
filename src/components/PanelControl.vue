@@ -53,6 +53,7 @@ export default {
       keys: [],
       // datos: { nombre: 'primero', nombre2: 'segundo', nombre3: 'tercero' },
       datos: [],
+      codigos: [],
       semana: {},
       horario: {},
       cargado: false,
@@ -60,10 +61,10 @@ export default {
     }
   },
   props: {
-    codigos: {
-      F: 'f',
-      A: 'A'
-    },
+    // codigos: {
+    //   F: 'f',
+    //   A: 'A'
+    // },
     semana_selec: { default: 1 },
     clase: { default: 3 }
     // datos: { default: '' }
@@ -153,8 +154,8 @@ export default {
       respon = respon.resul
       // this.datos = respon
       // console.log(uri)
-      console.log('res ', this.datos)
-      console.log('clase ', this.clase)
+      // console.log('res ', this.datos)
+      // console.log('clase ', this.clase)
       for (const alumno in respon) {
         // console.log(alumno)
         // console.log(respon[alumno])
@@ -182,6 +183,22 @@ export default {
       // console.log('alumno ', alumno, respon)
       // this.datos[`alumno_${alumno.id}`] = respon.resul[0]
       this.datos.push(respon.resul[0])
+    },
+    async get_codigos () {
+      let token = localStorage.getItem('control')
+      token = JSON.parse(token)
+      const uri = 'http://localhost:4000/api/codigos/get'
+      let respon = await fetch(uri, {
+        method: 'POST',
+        headers: {
+          authorization: `bearer ${token.token}`,
+          'Content-type': 'application/json; charset=UTF-8'
+        }
+      })
+      respon = await respon.json()
+      respon = respon.resul
+      this.codigos = respon
+      // console.log(this.codigos)
     }
   },
   mounted () {
@@ -189,6 +206,7 @@ export default {
     // this.keys.forEach(element => {
     //   this.keys = Object.keys(element)
     // })
+    this.get_codigos()
     this.get_alumnos()
     this.get_semana()
   }

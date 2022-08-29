@@ -3,7 +3,7 @@
     <div class="col " >
         <span v-if="!est" class="altura border" @click="estado">
           <span v-if="asis">
-              {{val}}
+              {{val.nombre}}
           </span>
           <span v-else class="nada">
             '_'
@@ -11,7 +11,7 @@
         </span>
         <span v-else class="altura"  >
             <select name="asistencia" @change="sele()" v-model="val" >
-                <option v-for="(opt, index) in opts" :value="opt" :key="index">{{opt}}</option>
+                <option v-for="(opt, index) in valores" :value="opt" :key="index" :title="opt.descripcion">{{opt.nombre}}</option>
             </select>
         </span>
     </div>
@@ -33,7 +33,6 @@ export default {
   },
   props: {
     valores: { required: true },
-    // valor: { default: ' ' },
     horario: { required: true },
     alumno: { required: true }
   },
@@ -41,40 +40,23 @@ export default {
     estado () {
       this.est = !this.est
     },
-    async sele () {
-      // // const uri = 'http://localhost:4000/api/asistencias'
-      // // let token = localStorage.getItem('control')
-      // // token = JSON.parse(token)
-      // // console.log('pasamos', this.horario, this.alumno, this.val)
-      // // const res = await fetch(uri, {
-      // //   method: 'POST',
-      // //   headers: {
-      // //     authorization: `bearer ${token.token}`,
-      // //     'Content-type': 'application/json; charset=UTF-8'
-      // //   },
-      // //   body: JSON.stringify({
-      // //     campos: {
-      // //       id_alumno: this.alumno,
-      // //       id_horarios: this.horario,
-      // //       id_codigos: this.val
-      // //     }
-      // //   })
-      // // })
-      // if (res.status === 200) {
+    async sele (e) {
+      // console.log('e ', this.val)
       this.estado()
-      this.asis = true
-      //   console.log('ok')
-      // } else {
-      //   console.log(res)
-      // }
-      console.log(this.alumno, this.horario)
+      if (this.asis) {
+        this.act_asis()
+      } else {
+        this.nuevo()
+      }
+      // console.log(this.alumno, this.horario)
     },
-    async existe () { // cambiar funcine s afuturo <------------------------------
-      const uri = 'http://localhost:4000/api/asistencias'
+    async existe () {
+      let exis = false
+      const uri = 'http://localhost:4000/api/asistencias/get'
       let token = localStorage.getItem('control')
       token = JSON.parse(token)
-      console.log('pasamos', this.horario, this.alumno, this.val)
-      const res = await fetch(uri, {
+      // console.log('pasamos', this.horario, this.alumno, this.val)
+      let res = await fetch(uri, {
         method: 'POST',
         headers: {
           authorization: `bearer ${token.token}`,
@@ -82,21 +64,39 @@ export default {
         },
         body: JSON.stringify({
           campos: {
-            id_alumno: this.alumno,
-            id_horarios: this.horario,
-            id_codigos: this.val
+            id_alumnos: this.alumno.id,
+            id_horarios: this.horario.id
           }
         })
       })
       if (res.status === 200) {
-        this.estado()
+        // this.estado()
+        res = await res.json()
+        res = res.resul
+        // console.log(this.alumno.apellido1, res)
+        if (res.length < 1 || res.length > 1) {
+          return 0
+        }
+        for (const element in this.valores) {
+          console.log(element.id, res[0].id_codigos)
+          if (element.id !== res[0].id_codigos) {
+            exis = true
+          }
+        }
+        console.log(this.valores)
+        console.log(this.alumno.apellido1, exis, res)
+        if (!exis) {
+          return 0
+        }
+        this.asis = true
+        this.val = res
       }
     },
     async nuevo () {
       const uri = 'http://localhost:4000/api/asistencias'
       let token = localStorage.getItem('control')
       token = JSON.parse(token)
-      console.log('pasamos', this.horario, this.alumno, this.val)
+      // console.log('pasamos', this.horario, this.alumno, this.val)
       const res = await fetch(uri, {
         method: 'POST',
         headers: {
@@ -105,9 +105,9 @@ export default {
         },
         body: JSON.stringify({
           campos: {
-            id_alumno: this.alumno,
-            id_horarios: this.horario,
-            id_codigos: this.val
+            id_alumnos: this.alumno.id,
+            id_horarios: this.horario.id,
+            id_codigos: this.val.id
           }
         })
       })
@@ -115,7 +115,32 @@ export default {
         this.estado()
         this.asis = true
       }
+    },
+    async act_asis () {
+      const uri = 'http://localhost:4000/api/asistencias'
+      let token = localStorage.getItem('control')
+      token = JSON.parse(token)
+      const res = await fetch(uri, {
+        method: 'PUT',
+        headers: {
+          authorization: `bearer ${token.token}`,
+          'Content-type': 'application/json; charset=UTF-8'
+        },
+        body: JSON.stringify({
+          campos: {
+            id_alumno: this.alumno.id,
+            id_horarios: this.horario.id,
+            id_codigos: this.val.id
+          }
+        })
+      })
+      if (res.status === 200) {
+        this.estado()
+      }
     }
+  },
+  mounted () {
+    this.existe()
   }
 }
 </script>
