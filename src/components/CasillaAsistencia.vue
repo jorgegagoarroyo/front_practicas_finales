@@ -23,6 +23,7 @@ export default {
   name: 'CasillaAsistencia',
   data () {
     return {
+      id: 0,
       asis: false,
       est: false,
       val: ' ',
@@ -51,7 +52,7 @@ export default {
       // console.log(this.alumno, this.horario)
     },
     async existe () {
-      let exis = false
+      // let exis = false
       const uri = 'http://localhost:4000/api/asistencias/get'
       let token = localStorage.getItem('control')
       token = JSON.parse(token)
@@ -70,26 +71,27 @@ export default {
         })
       })
       if (res.status === 200) {
-        // this.estado()
         res = await res.json()
         res = res.resul
         // console.log(this.alumno.apellido1, res)
         if (res.length < 1 || res.length > 1) {
           return 0
         }
-        for (const element in this.valores) {
-          console.log(element.id, res[0].id_codigos)
+        const registrado = await this.valores.find((element) => {
+          // console.log(element.id, res[0].id_codigos)
           if (element.id !== res[0].id_codigos) {
-            exis = true
+            return 0
           }
-        }
-        console.log(this.valores)
-        console.log(this.alumno.apellido1, exis, res)
-        if (!exis) {
+          return true
+        })
+        // console.log(this.valores)
+        // console.log(this.alumno.apellido1, registrado, res)
+        if (!registrado || registrado === -1) {
           return 0
         }
         this.asis = true
-        this.val = res
+        this.val = registrado
+        this.id = res[0].id
       }
     },
     async nuevo () {
@@ -112,8 +114,8 @@ export default {
         })
       })
       if (res.status === 200) {
-        this.estado()
-        this.asis = true
+        // this.estado()
+        this.existe()
       }
     },
     async act_asis () {
@@ -128,14 +130,15 @@ export default {
         },
         body: JSON.stringify({
           campos: {
-            id_alumno: this.alumno.id,
+            id: this.id,
+            id_alumnos: this.alumno.id,
             id_horarios: this.horario.id,
             id_codigos: this.val.id
           }
         })
       })
       if (res.status === 200) {
-        this.estado()
+        // this.estado()
       }
     }
   },
