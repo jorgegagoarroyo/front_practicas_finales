@@ -1,20 +1,23 @@
 <template>
-<div class="row" >
-    <div class="col " >
-        <span v-if="!est" class="altura border" @click="estado">
-          <span v-if="asis">
+<div class="row">
+  <div class="col-12 bg-secondary altura" v-if="fiesta">
+  </div>
+  <div class="col m-0 p-0" v-else >
+        <!-- <span v-if="!est" class="altura border col-12" @click="estado"> -->
+        <span v-if="est === false" class="altura" @click="estado(true)">
+            <span v-if="asis" :title="val.descripcion">
               {{val.nombre}}
-          </span>
-          <span v-else class="nada">
-            '_'
-          </span>
+            </span>
+            <span v-else class="nada">
+              '_'
+            </span>
         </span>
         <span v-else class="altura"  >
-            <select name="asistencia" @change="sele()" v-model="val" >
+            <select class="m-0 p-0" name="asistencia" @change="sele()" v-model="val" >
                 <option v-for="(opt, index) in valores" :value="opt" :key="index" :title="opt.descripcion">{{opt.nombre}}</option>
             </select>
         </span>
-    </div>
+  </div>
 </div>
 </template>
 
@@ -29,7 +32,8 @@ export default {
       val: ' ',
       opts: this.valores,
       hora: this.horario,
-      estudiante: this.alumno
+      estudiante: this.alumno,
+      fiesta: false
     }
   },
   props: {
@@ -38,18 +42,21 @@ export default {
     alumno: { required: true }
   },
   methods: {
-    estado () {
-      this.est = !this.est
+    estado (x) {
+      this.est = x
+      console.log('estado ', this.est)
     },
-    async sele (e) {
-      // console.log('e ', this.val)
-      this.estado()
+    async sele () {
+      console.log('sele ', this.val, this.est)
+      this.estado(false)
+      // this.est = false
       if (this.asis) {
         this.act_asis()
       } else {
         this.nuevo()
       }
       // console.log(this.alumno, this.horario)
+      console.log('post sele ', this.val, this.est)
     },
     async existe () {
       // let exis = false
@@ -140,20 +147,66 @@ export default {
       if (res.status === 200) {
         // this.estado()
       }
+    },
+    async festivos () {
+      const uri = 'http://localhost:4000/api/fechas/get'
+      let token = localStorage.getItem('control')
+      token = JSON.parse(token)
+      let res = await fetch(uri, {
+        method: 'POST',
+        headers: {
+          authorization: `bearer ${token.token}`,
+          'Content-type': 'application/json; charset=UTF-8'
+        },
+        body: JSON.stringify({
+          campos: {
+            id: this.horario.id_fechas
+          }
+        })
+      })
+      res = await res.json()
+      res = res.resul
+      // console.log('horario ', this.horario, res[0].festivo)
+      this.fiesta = res[0].festivo
+      // console.log('fiesta ', this.fiesta)
     }
   },
   mounted () {
-    this.existe()
+    this.festivos()
+    if (!this.fiesta) {
+      this.existe()
+    }
+    // console.log(this.festivo)
   }
 }
 </script>
 
 <style scope>
+*{
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
 .altura{
-    height: 1rem;
+    /* height: 1rem; */
+    height: 100%;
 }
 .nada{
   color: transparent;
 }
-
+.w-f{
+  width: 100%;
+}
+.act{
+  border: solid red;
+}
+.act2{
+  border: solid blue;
+}
+select {
+  width: 95%
+}
+option {
+  width: 95%
+}
 </style>

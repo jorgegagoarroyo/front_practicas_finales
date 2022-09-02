@@ -11,6 +11,7 @@
           <span class="col-4"></span>
           <span class="col-2 bg-primary text-white btn" v-if="nuevo" @click="obt_datos">AGREGAR</span>
           <span class="col-2 bg-primary text-white btn" v-else @click="obt_datos">EDITAR</span>
+          <span></span>
         </div>
     </form>
 </div>

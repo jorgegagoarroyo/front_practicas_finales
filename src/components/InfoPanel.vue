@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div>
     <!-- <span class="" v-for="(dia, index) in dias" :key="index">
         {{dia}}
         <div class="" v-for="(hora, index) in horario" :key="index">
@@ -9,10 +9,10 @@
     <!-- <span>{{elemento}}</span> -->
     <div class="row d-flex flex-column " v-if="listo">
       <!-- <div class="col border">{{dia}}</div> -->
-      <div class="col border">{{aulas.codigo}}</div>
-      <div class="col border">{{ufs.codigo}}</div>
-      <div class="col border">{{horas.referencia}}</div>
-      <div class="col border">{{usuarios.codigo}}</div>
+      <div class="col celda">{{aulas.codigo}}</div>
+      <div class="col celda">{{ufs.codigo}}</div>
+      <div class="col celda">{{horas.referencia}}</div>
+      <div class="col celda">{{usuarios.codigo}}</div>
     </div>
 
   </div>
@@ -100,9 +100,10 @@ export default {
 }
 </script>
 
-<style>
+<style scope>
 .celda{
-    max-width: 5%;
+    min-width: 4%;
+    min-height: 1.5rem;
 }
 
 </style>

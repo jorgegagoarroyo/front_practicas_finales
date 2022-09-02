@@ -54,8 +54,9 @@ export default {
         localStorage.setItem(this.ls_key, JSON.stringify(res))
         // console.log('response', res)
         this.resetEstado()
-        console.log(localStorage)
-        this.$router.push('/multi')
+        this.$emit('cambio_rol')// <-----------------------------------------------------------
+        // console.log(localStorage)
+        this.$router.push('/blank')
         // } else {
         //   throw { mensaje: 'error en status server', res }
         // }

@@ -1,27 +1,46 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import HomeView from '../views/HomeView.vue'
-import ListaView from '../views/TestView.vue'
+import FirstView from '../views/FirstView.vue'
 import MultiTest from '../components/MultiTest.vue'
+import PanelControl from '../components/PanelControl.vue'
+// import ListaDatos from '../components/ListaDatos.vue'
+import FiltoControl from '../components/FiltroControl.vue'
+import BlankComp from '../components/BlankComp.vue'
+// import ListaView from '../views/ListaView.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: ListaView
-    // component: HomeView
-  },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    component: FirstView
+    // component: MultiTest
   },
   {
     path: '/multi',
     name: 'multi',
     component: MultiTest
+  },
+  {
+    path: '/panel',
+    name: 'panel',
+    component: PanelControl
+  },
+  {
+    path: '/panel_filtro',
+    name: 'filtrado',
+    component: FiltoControl
+  },
+  {
+    path: '/lista',
+    name: 'lista',
+    props: true,
+    // component: ListaView
+    component: () => import('../views/ListaView.vue')
+  },
+  {
+    path: '/blank',
+    name: 'blank',
+    component: BlankComp
   }
 ]
 
@@ -31,3 +50,8 @@ const router = createRouter({
 })
 
 export default router
+
+// path: '',
+// name: '',
+// component: ''
+// }
