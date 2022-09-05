@@ -9,7 +9,7 @@
     </div>
     <div class="row mt-4">
         <label>Password</label>
-        <input type = "text"
+        <input type = "password"
         v-model = "usuario.pass"
         class = "from-control col-6 offset-3">
     </div>

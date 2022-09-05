@@ -1,24 +1,34 @@
 <template>
-  <!-- <nav> -->
+  <nav v-if="this.$route.path !== '/'">
+    <!-- v-if="this.$route.path !== '/'" -->
     <!-- <router-link to="/">Home</router-link> -->
     <!-- <router-link to="/about">About</router-link> -->
     <!-- <template v-if="profesor || secretaria">
       | <router-link to="/panel">asistencias</router-link>
       | <router-link :to="{ name: 'lista', params: { tabla: 'alumnos', editar: false} }">alumnos</router-link>
     </template> -->
-    <nav v-if="rol === 'admin'">
-       <router-link :key="$route.fullPath" :to="{ name: 'lista', params: { tabla: 'alumnos', editar: true, borrar: true} }">alumnos</router-link> |
-      <router-link :key="$route.fullPath" :to="{ name: 'lista', params: { tabla: 'aulas', editar: true, borrar: true} }">aulas</router-link> |
-      <router-link :key="$route.fullPath" :to="{ name: 'lista', params: { tabla: 'ciclos', editar: true, borrar: true} }">ciclos</router-link> |
-      <router-link :key="$route.fullPath" :to="{ name: 'lista', params: { tabla: 'codigos', editar: true, borrar: true} }">codigos</router-link> |
-      <router-link :key="$route.fullPath" :to="{ name: 'lista', params: { tabla: 'cursos', editar: true, borrar: true} }">cursos</router-link> |
-      <router-link :key="$route.fullPath" :to="{ name: 'lista', params: { tabla: 'usuarios', editar: true, borrar: true} }">empleados</router-link> |
-      <router-link :key="$route.fullPath" :to="{ name: 'lista', params: { tabla: 'horas', editar: true, borrar: true} }">horas</router-link> |
-      <router-link :key="$route.fullPath" :to="{ name: 'lista', params: { tabla: 'semanas', editar: true, borrar: true} }">semanas</router-link> |
-      <router-link :key="$route.fullPath" to="/panel_filtro">asistencias</router-link>
-    </nav>
-  <!-- </nav> -->
-  <router-view @cambio_rol="nuevo_rol"/>
+    <template v-if="rol === 'admin'">
+      <router-link :to="{ name: 'lista', params: { tabla: 'alumnos', editar: true, borrar: true} }">alumnos</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'aulas', editar: true, borrar: true} }">aulas</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'ciclos', editar: true, borrar: true} }">ciclos</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'codigos', editar: true, borrar: true} }">codigos</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'cursos', editar: true, borrar: true} }">cursos</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'usuarios', editar: true, borrar: true} }">usuario</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'horas', editar: true, borrar: true} }">horas</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'semanas', editar: true, borrar: true} }">semanas</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'clase_alumno', editar: true, borrar: true} }">clases-alumno</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'clases', editar: true, borrar: true} }">clases</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'clases_curso', editar: true, borrar: true} }">clases_curso</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'fechas', editar: true, borrar: true} }">fechas</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'horarios', editar: true, borrar: true} }">horarios</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'roles', editar: true, borrar: true} }">roles</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'ufs', editar: true, borrar: true} }">ufs</router-link> |
+      <router-link :to="{ name: 'lista', params: { tabla: 'modulos', editar: true, borrar: true} }">modulos</router-link> |
+
+      <router-link to="/panel_filtro">asistencias</router-link>
+    </template>
+  </nav>
+  <router-view @cambio_rol="nuevo_rol" />
 </template>
 <script>
 export default {

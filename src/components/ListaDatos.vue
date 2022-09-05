@@ -1,5 +1,5 @@
 <template>
-<div class="container">
+<div class="container" :key="token">
   <!-- <div class="row"> -->
     <!-- <div class="table table-borderer">{{tabla}}</div>
   </div> -->
@@ -48,11 +48,9 @@
 export default {
   name: 'ListaDatos',
   props: {
-    tabla: { required: true }, // { type: String, default: () => ('def'), required: true },
+    tabla: { required: true },
     editar: { default: false },
     borrar: { default: false }
-    // titulo: { default: () => (['t1', 't2', 't3']) },
-    // dato: { default: () => ([{ t1: 'a', t2: 'b', t3: 'c' }, { t1: 'd', t2: 'e', t3: 'f' }, { t1: 'g', t2: 'h', t3: 'i' }]) }
   },
   data () {
     return {
@@ -62,7 +60,6 @@ export default {
       datos: [],
       token: '',
       elemento_nombre: ''
-      // tabla: ''
     }
   },
   methods: {
@@ -76,14 +73,8 @@ export default {
           'Content-type': 'application/json; charset=UTF-8'
         }
       })
-      // console.log(temp)
       temp = await temp.json()
-      // console.log(temp)
       this.datos = temp.resul
-      // console.log('datos ', this.datos)
-      // this.datos = [{ t1: 'a', t2: 'b', t3: 'c' }, { t1: 'd', t2: 'e', t3: 'f' }, { t1: 'g', t2: 'h', t3: 'i' }]
-      // console.log(`leer ${this.datos.status}`)
-      // this.cant += 1
     },
     async leer_campos () {
       const uri = `http://localhost:4000/api/${this.tabla}/campos`
@@ -98,6 +89,7 @@ export default {
       // console.log(temp)
       temp = await temp.json()
       temp = temp.fields
+      delete temp.pass
       // console.log('campo ', temp)
       // this.titulos = temp.fields
       this.titulos = Object.keys(temp)
@@ -107,13 +99,30 @@ export default {
     },
     async editar_elemento (elemento) {
       const element = await JSON.stringify(elemento)
-      console.log(`editar ${element}`)
-      console.log(elemento)
+      // console.log(`editar ${element}`)
+      // console.log(elemento)
       this.$router.push({ name: 'elemento', params: { tabla: this.tabla, existe: element, editar: this.edits, borrar: this.deletes } })
       // llamara funcion para editar ese elemento
     },
-    eliminar_elemento (elemento) {
+    async eliminar_elemento (elemento) {
       console.log('eliminar')
+      console.log(elemento)
+      console.log(this.tabla)
+      const uri = `http://localhost:4000/api/${this.tabla}`
+      let temp = { id: elemento.id }
+      temp = { campos: temp }
+      const res = await fetch(uri, {
+        method: 'DELETE',
+        headers: {
+          authorization: `bearer ${this.token.token}`,
+          'Content-type': 'application/json; charset=UTF-8'
+        },
+        body: JSON.stringify(temp)
+      })
+      if (res.status === 200) {
+        // this.$router.push({ name: 'lista', params: { tabla: this.tabla, editar: this.editar, borrar: this.editar } })
+        this.load()
+      }
     },
     cambiar_botones () {
       if (this.editar === 'true') {
@@ -127,22 +136,20 @@ export default {
       let token = localStorage.getItem('control')
       token = JSON.parse(token)
       if (!token) {
-        this.$router.push('/')
+        this.load()
       }
       this.token = token
+    },
+    async load () {
+      this.elemento_nombre = this.tabla.slice(0, -1)
+      await this.get_token()
+      this.cambiar_botones()
+      await this.leer_campos()
+      await this.leer_elementos()
     }
   },
   async mounted () {
-    this.elemento_nombre = this.tabla.slice(0, -1)
-    await this.get_token()
-    this.cambiar_botones()
-    // this.tabla = this.$route.params.tabla
-    // console.log('tabla es ', this.tabla)
-    // console.log('edita ', this.edits)
-    // console.log('borrar es ', this.deletes)
-    // console.log(this.$route.params)
-    await this.leer_campos()
-    await this.leer_elementos()
+    this.load()
   }
 }
 </script>

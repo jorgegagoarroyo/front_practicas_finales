@@ -1,11 +1,24 @@
 <template>
 <div class="container  rounded">
-    <form class="border p-4" v-if="cambios" name="formulario1">
+    <form class="border p-4" v-if="cambios || done" name="formulario1">
         <div class="m-3 row" v-for="(titulo, index) in titulos" :key="index">
-            <label class="col ">{{titulo}}</label>
-            <input :v-if="existe[titulo]" class="form-contol col-10" :type=tipos[titulo] :name=titulo  :value="data_existe[titulo]"/>
-            <!-- <input :v-if="!existe[titulo]" class="form-contol col-10" :type=tipos[titulo] :name=titulo>
-            {{data_existe[titulo]}} -->
+          <template v-if="listas[titulo]">
+              <label class="col">{{titulo}}</label>
+              <select class="col-10" :name="titulo">
+                <template v-for="val in listas[titulo]" >
+                  <template v-if="val.id === data_existe[titulo]">
+                    <option  :value="val.id" :key="val.id" selected>{{val.nombre}}</option>
+                  </template>
+                  <template v-else>
+                    <option  :value="val.id" :key="val.id">{{val.nombre}}</option>
+                  </template>
+                </template>
+              </select>
+            </template>
+            <template v-else>
+              <label class="col-2 ">{{titulo}}</label>
+              <input :v-if="existe[titulo]" class="form-contol col-10" :type=tipos[titulo] :name=titulo  :value="data_existe[titulo]"/>
+            </template>
         </div>
         <div class="row ">
           <span class="col-2 bg-secondary text-white offset-2 btn"  @click.stop="cancel_edit">CANCELAR</span>
@@ -19,7 +32,6 @@
 </template>
 
 <script>
-// falta boton y metodo cancelar y router a otra pagina
 export default {
   name: 'IngresarEditar',
   props: {
@@ -35,12 +47,13 @@ export default {
       datos: {},
       data_existe: this.existe,
       cambios: false,
-      token: ''
+      done: false,
+      token: '',
+      listas: {}
     }
   },
   methods: {
     async leer_elementos () {
-      // quitar leera si hay datos en props y los colocara en el campo correspondiente
       const uri = `http://localhost:4000/api/${this.tabla}`
       this.datos = await fetch(uri, {
         method: 'GET'
@@ -48,7 +61,6 @@ export default {
     },
     async leer_campos () {
       const uri = `http://localhost:4000/api/${this.tabla}/campos`
-      // console.log(uri)
       const titles = await fetch(uri, {
         method: 'GET',
         headers: {
@@ -56,7 +68,6 @@ export default {
           'Content-type': 'application/json; charset=UTF-8'
         }
       })
-      // console.log(await titles.json())
       this.titulos = await titles.json()
       this.titulos = this.titulos.fields
       if (this.titulos.id) {
@@ -67,7 +78,6 @@ export default {
     },
     crear_tipos (lista = null) {
       if (!lista) {
-        // console.log('no hay tipos')
         this.cancel_edit()
       }
       const number = /int/
@@ -83,29 +93,59 @@ export default {
         }
       }
       this.tipos = temp
+      this.crear_selects()
+    },
+    async crear_selects () {
+      // console.log(this.titulos)
+      const keys = Object.keys(this.titulos)
+      const rel = /id_/
+      for (const val in keys) {
+        if (rel.test(keys[val])) {
+          // console.log(keys[val])
+          let tempName = keys[val].split('_')
+          tempName = tempName[1]
+          await this.leer_campos_rels(tempName, keys[val])
+        }
+        this.done = true
+      }
+    },
+    async leer_campos_rels (tabla, nombre) {
+      const uri = `http://localhost:4000/api/${tabla}/get`
+      let vals = await fetch(uri, {
+        method: 'POST',
+        headers: {
+          authorization: `bearer ${this.token}`,
+          'Content-type': 'application/json; charset=UTF-8'
+        }
+      })
+      vals = await vals.json()
+      // console.log(vals)
+      this.listas[nombre] = vals.resul
+      // console.log(this.listas)
     },
     obt_datos (event, nuevo = false) {
-      // console.log('datos')
-      console.log('obt_datos ', nuevo)
+      // console.log('obt_datos ', nuevo)
       const datosForm = document.formulario1
-      // console.log(`datos formularios ${datosForm.length}`, datosForm)
-      // console.log('datos formularios', datosForm[3].name, datosForm[3].value)
       for (let i = 0; i < datosForm.length; i++) {
-        // console.log(i, datosForm[i].name, datosForm[i].value)
         this.datos[datosForm[i].name] = datosForm[i].value
       }
+      // console.log(datosForm.test.value)
+      // console.log('datos ', this.datos)
+      // console.log('existe ', this.data_existe)
+      if (this.datos.pass === this.data_existe.pass) {
+        delete this.datos.pass
+      }
+      console.log('datos obt ', this.datos)
       if (!nuevo) {
         return this.enviar_datos_editados()
       }
       this.enviar_datos_nuevos()
     },
     async enviar_datos_nuevos () {
-      // console.log(this.datos)
-      console.log('datos nuevos')
+      // console.log('datos nuevos')
       const uri = `http://localhost:4000/api/${this.tabla}`
       let temp = this.datos
       temp = { campos: temp }
-      // console.log(temp)
       const res = await fetch(uri, {
         method: 'POST',
         headers: {
@@ -133,12 +173,10 @@ export default {
         },
         body: JSON.stringify(temp)
       })
-      console.log(res.status)
+      // console.log(res.status)
       if (res.status === 200) {
         this.cancel_edit()
       }
-      // res = await res.json()
-      // console.log('editados datos ', res.status)
     },
     cancel_edit () {
       this.$router.push({ name: 'lista', params: { tabla: this.tabla, editar: this.editar, borrar: this.editar } })
@@ -146,7 +184,6 @@ export default {
     async cambio_props () {
       if (this.existe) {
         this.data_existe = JSON.parse(this.existe)
-        // console.log('datos existen ', this.data_existe)
       }
       this.cambios = true
     }
@@ -154,11 +191,10 @@ export default {
   async mounted () {
     let token = localStorage.getItem('control')
     token = await JSON.parse(token)
-    // console.log(token.token)
     this.token = token.token
     this.leer_campos()
-    // console.log('tabla edicion ', this.existe)
     this.cambio_props()
+    this.data_existe.pass = ''
   }
 }
 </script>

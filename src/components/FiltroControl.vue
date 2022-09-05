@@ -235,7 +235,7 @@ export default {
         body: JSON.stringify({
           campos: { // agregar otros filtros
             id: data[0].id_empleados,
-            id_roles: 1 // admin 1 para pruebas y 3 para profesores
+            id_roles: 3 // admin 1 para pruebas y 3 para profesores
           }
         })
       })
