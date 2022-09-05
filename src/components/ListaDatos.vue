@@ -3,6 +3,11 @@
   <!-- <div class="row"> -->
     <!-- <div class="table table-borderer">{{tabla}}</div>
   </div> -->
+  <div class="row">
+    <div class="col m-2">
+      <button class="btn btn-secondary col-2" @click="editar_elemento(dato)">Agregar {{elemento_nombre}}</button>
+    </div>
+  </div>
     <div class="row">
         <table class="table table-bordered">
             <thead>
@@ -39,6 +44,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'ListaDatos',
   props: {
@@ -50,11 +56,12 @@ export default {
   },
   data () {
     return {
-      edits: this.editar,
-      deletes: this.borrar,
+      edits: false,
+      deletes: false,
       titulos: [],
       datos: [],
-      token: ''
+      token: '',
+      elemento_nombre: ''
       // tabla: ''
     }
   },
@@ -69,7 +76,7 @@ export default {
           'Content-type': 'application/json; charset=UTF-8'
         }
       })
-      console.log(temp)
+      // console.log(temp)
       temp = await temp.json()
       // console.log(temp)
       this.datos = temp.resul
@@ -88,7 +95,7 @@ export default {
           'Content-type': 'application/json; charset=UTF-8'
         }
       })
-      console.log(temp)
+      // console.log(temp)
       temp = await temp.json()
       temp = temp.fields
       // console.log('campo ', temp)
@@ -98,13 +105,23 @@ export default {
       // this.titulos = ['t1', 't2', 't3']
       // console.log(`campos ${this.titulos}`)
     },
-    editar_elemento (elemento) {
-      const element = JSON.stringify(elemento)
+    async editar_elemento (elemento) {
+      const element = await JSON.stringify(elemento)
       console.log(`editar ${element}`)
+      console.log(elemento)
+      this.$router.push({ name: 'elemento', params: { tabla: this.tabla, existe: element, editar: this.edits, borrar: this.deletes } })
       // llamara funcion para editar ese elemento
     },
     eliminar_elemento (elemento) {
       console.log('eliminar')
+    },
+    cambiar_botones () {
+      if (this.editar === 'true') {
+        this.edits = true
+      }
+      if (this.borrar === 'true') {
+        this.deletes = true
+      }
     },
     get_token () {
       let token = localStorage.getItem('control')
@@ -116,11 +133,13 @@ export default {
     }
   },
   async mounted () {
+    this.elemento_nombre = this.tabla.slice(0, -1)
     await this.get_token()
+    this.cambiar_botones()
     // this.tabla = this.$route.params.tabla
-    console.log('tabla es ', this.tabla)
-    console.log('edita ', this.edits)
-    console.log('borrar es ', this.deletes)
+    // console.log('tabla es ', this.tabla)
+    // console.log('edita ', this.edits)
+    // console.log('borrar es ', this.deletes)
     // console.log(this.$route.params)
     await this.leer_campos()
     await this.leer_elementos()

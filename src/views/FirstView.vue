@@ -22,7 +22,8 @@ export default {
   },
   mounted () {
     localStorage.removeItem('control')
-    this.$emit('cambio_rol')
+    // this.$emit('cambio_rol')
+    this.cambio()
   }
 }
 </script>

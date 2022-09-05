@@ -6,6 +6,7 @@ import PanelControl from '../components/PanelControl.vue'
 // import ListaDatos from '../components/ListaDatos.vue'
 import FiltoControl from '../components/FiltroControl.vue'
 import BlankComp from '../components/BlankComp.vue'
+import IngresarEditar from '../components/IngresarEditar.vue'
 // import ListaView from '../views/ListaView.vue'
 
 const routes = [
@@ -41,6 +42,12 @@ const routes = [
     path: '/blank',
     name: 'blank',
     component: BlankComp
+  },
+  {
+    path: '/elemento',
+    name: 'elemento',
+    component: IngresarEditar,
+    props: true
   }
 ]
 
