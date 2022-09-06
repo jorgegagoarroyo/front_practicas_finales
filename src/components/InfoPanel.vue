@@ -9,10 +9,11 @@
     <!-- <span>{{elemento}}</span> -->
     <div class="row d-flex flex-column " v-if="listo">
       <!-- <div class="col border">{{dia}}</div> -->
-      <div class="col celda">{{aulas.codigo}}</div>
-      <div class="col celda">{{ufs.codigo}}</div>
-      <div class="col celda">{{horas.referencia}}</div>
-      <div class="col celda">{{usuarios.codigo}}</div>
+      <div class="col celda" :key="horas">{{horas.nombre}}</div>
+      <div class="col celda" :title="modulos.nombre" :key="modulos">{{modulos.codigo}}</div>
+      <div class="col celda" :title="ufs.nombre" :key="ufs">{{ufs.codigo}}</div>
+      <div class="col celda" :key="usuarios">{{usuarios.codigo}}</div>
+      <div class="col celda" :key="aulas">{{aulas.codigo}}</div>
     </div>
 
   </div>
@@ -42,7 +43,7 @@ export default {
       // console.log('datos')
       let token = localStorage.getItem('control')
       token = JSON.parse(token)
-      // console.log('elemento ', this.elemento)
+      // console.log('elemento ', this.elemento)<------------------------------
       // let item = Object.keys(this.elemento)
       // item = this.elemento[item]
       // const valor = item.resul[0]
@@ -60,12 +61,13 @@ export default {
         await this.get_info(item[i], valor[item[i]], token)
       }
       // console.log('res datos ', res)
+      this.get_info('id_modulos', this.ufs.id_modulos, token, 'id_modulos')
       this.listo = true
     },
     async get_info (table, val, token) {
       // console.log('get info')
       // console.log('table ', table)
-      // console.log(val)
+      // console.log(buscar, val)
       if (table !== 'id') {
         let tabla = table.split('_')
         tabla = tabla[1]
@@ -87,15 +89,32 @@ export default {
           })
         })
         res = await res.json()
+        // console.log('this[] ', res.resul)
         this[tabla] = res.resul[0]
+        // console.log(`${tabla} `, res.resul)
         // console.log('this[] ', this[tabla])
       }
     }
   },
   mounted () {
+    // this.fecha = ''
+    // this.aulas = ''
+    // this.horas = ''
+    // this.ufs = ''
+    // this.modulos = ''
+    // this.usuarios = ''
+    // this.listo = false
     // this.get_semana()
     // console.log('info')
     this.get_datos()
+    // console.log('dia ', this.dia)
+    console.log('elemento ', this.elemento)
+  },
+  watch: {
+    elemento: function () {
+      console.log('cambio en elemento')
+      this.get_datos()
+    }
   }
 }
 </script>

@@ -98,10 +98,13 @@ export default {
     async crear_selects () {
       // console.log(this.titulos)
       const keys = Object.keys(this.titulos)
+      console.log(keys)
       const rel = /id_/
       for (const val in keys) {
+        console.log(val)
+        console.log(keys[val])
         if (rel.test(keys[val])) {
-          // console.log(keys[val])
+          console.log(keys[val])
           let tempName = keys[val].split('_')
           tempName = tempName[1]
           await this.leer_campos_rels(tempName, keys[val])
@@ -110,6 +113,12 @@ export default {
       }
     },
     async leer_campos_rels (tabla, nombre) {
+      if (tabla === 'empleados' || tabla === 'profesor') {
+        tabla = 'usuarios'
+      }
+      if (tabla === 'clasecurso' || tabla === 'clasescursos') {
+        tabla = 'clases_curso'
+      }
       const uri = `http://localhost:4000/api/${tabla}/get`
       let vals = await fetch(uri, {
         method: 'POST',

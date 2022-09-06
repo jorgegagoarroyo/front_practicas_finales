@@ -37,7 +37,6 @@
           </tbody>
         </table>
       </div>
-
       <!-- <div class="row">test varios
         <info-panel :elemento="semana" v-if="cargado" />
       </div> -->
@@ -63,12 +62,14 @@ export default {
       // horario: {},
       cargado: false,
       listado: false,
-      feriados: {}
+      feriados: {},
+      temp: {}
     }
   },
   props: {
-    semana_selec: { default: 1 },
-    clase: { default: 3 }
+    semana_selec: {},
+    clase: {},
+    clase_curso: {}
   },
   methods: {
     async get_semana () {
@@ -107,18 +108,20 @@ export default {
         this.feriados[lista[element].fecha] = lista[element].festivo
         const date = lista[element].fecha
         const hora = await this.get_horas(lista[element], token)
-        if (hora) {
+        if (await hora) {
           temp[date] = hora
         }
       // })
       }
       // console.log('temp ', temp)
       this.semana = temp
-      this.cargado = true
+      this.ok_clase(token)
+      // this.cargado = true
       // console.log('semana ', this.semana)
     },
     async get_horas (element, token) {
       const uri = 'http://localhost:4000/api/horarios/get'
+      // let temp = ''
       let res = await fetch(uri, {
         method: 'POST',
         headers: {
@@ -132,12 +135,81 @@ export default {
         })
       })
       res = await res.json()
+      // res = res.resul
       // console.log(res)
+      // res = res.resul
       if (res.resul.length > 0) {
-        // this.horario[element.id] = res
         return res
       }
-      return false
+      // return false
+    },
+    async ok_clase (token) {
+      // console.log('ok clase ', this.semana)
+      const keys = Object.keys(this.semana)
+      const nSemana = {}
+      let temp
+      for (const i in keys) {
+        temp = []
+        const valTemp = this.semana[keys[i]].resul
+        // console.log('ok clase key', valTemp)
+        for (const y in valTemp) {
+          // console.log('y', valTemp[y])
+          const valY = valTemp[y]
+          if (await this.auth_cla(valY, token)) {
+            temp.push(valY)
+          }
+        }
+        nSemana[keys[i]] = { resul: temp }
+      }
+      this.semana = nSemana
+      // console.log(nSemana)
+      this.cargado = true
+    },
+    async auth_cla (val, token) {
+      const uri = 'http://localhost:4000/api/ufs/get'
+      let res = await fetch(uri, {
+        method: 'POST',
+        headers: {
+          authorization: `bearer ${token.token}`,
+          'Content-type': 'application/json; charset=UTF-8'
+        },
+        body: JSON.stringify({
+          campos: { // agregar otros filtros
+            id: val.id_ufs
+          }
+        })
+      })
+      res = await res.json()
+      res = res.resul
+      // console.log('id modulo ', res)
+      return this.auth_mod(res, token)
+    },
+    async auth_mod (val, token) {
+      // console.log('val modulo ', val[0].id_modulos)
+      const uri = 'http://localhost:4000/api/modulos/get'
+      let res = await fetch(uri, {
+        method: 'POST',
+        headers: {
+          authorization: `bearer ${token.token}`,
+          'Content-type': 'application/json; charset=UTF-8'
+        },
+        body: JSON.stringify({
+          campos: { // agregar otros filtros
+            id: val[0].id_modulos
+          }
+        })
+      })
+      res = await res.json()
+      res = res.resul
+      res = res[0]
+      // console.log('res auth_mod ', res)
+      // console.log('id clase ', res.id_clases, 'selec ', this.clase)
+      if (res.id_clases === this.clase) {
+        // console.log('clase true')
+        return true
+      } else {
+        return false
+      }
     },
     async get_alumnos () {
       // console.log('get_alumnos')
@@ -153,7 +225,7 @@ export default {
         },
         body: JSON.stringify({
           campos: { // agregar otros filtros
-            id_clasescursos: this.clase
+            id_clasescursos: this.clase_curso
           }
         })
       })
