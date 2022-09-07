@@ -17,7 +17,9 @@
             </template>
             <template v-else>
               <label class="col-2 ">{{titulo}}</label>
-              <input :v-if="existe[titulo]" class="form-contol col-10" :type=tipos[titulo] :name=titulo  :value="data_existe[titulo]"/>
+              <!-- <input :v-if="existe[titulo]" class="form-contol col-10" :type=tipos[titulo] :name=titulo  :value="data_existe[titulo]"/>
+               -->
+               <input class="form-contol col-10" :type=tipos[titulo] :name=titulo  :value="data_existe[titulo]"/>
             </template>
         </div>
         <div class="row ">
@@ -36,7 +38,7 @@ export default {
   name: 'IngresarEditar',
   props: {
     tabla: { require: true },
-    existe: { default: false },
+    existe: {},
     editar: { require: true },
     borrar: { require: true }
   },
@@ -194,6 +196,7 @@ export default {
       if (this.existe) {
         this.data_existe = JSON.parse(this.existe)
       }
+      console.log('existe ', this.existe)
       this.cambios = true
     }
   },
@@ -203,7 +206,9 @@ export default {
     this.token = token.token
     this.leer_campos()
     this.cambio_props()
-    this.data_existe.pass = ''
+    if (this.data_existe.pass) {
+      this.data_existe.pass = ''
+    }
   }
 }
 </script>

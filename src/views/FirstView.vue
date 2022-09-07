@@ -24,7 +24,6 @@ export default {
     localStorage.removeItem('control')
     // this.$emit('cambio_rol')
     this.cambio()
-    console.log('mounted')
   }
 }
 </script>

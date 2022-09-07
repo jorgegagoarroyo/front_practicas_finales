@@ -24,7 +24,7 @@
           </thead>
           <tbody v-if="listado">
             <tr v-for="(alumno, index) in datos" :key="index" >
-              <td class="border-5-r">{{alumno.apellido1}} {{alumno.apellido2}}, {{alumno.nombre}}</td>
+              <td class="border-5-r" @dblclick="es_tutor(alumno)" >{{alumno.apellido1}} {{alumno.apellido2}}, {{alumno.nombre}}</td>
               <template v-for="(dia, key) in semana" :key="key">
                   <template v-for="resul in dia">
                     <template v-for="(hora, index) in resul" :key="index">
@@ -79,7 +79,8 @@ export default {
   props: {
     semana_selec: {},
     clase: {},
-    clase_curso: {}
+    clase_curso: {},
+    tutor: {}
   },
   methods: {
     async get_semana () {
@@ -298,6 +299,35 @@ export default {
       // console.log('datos asistencia')
       // console.log(this.clase)
       // this.$router.push({ name: 'asistencias', params: { alumnos: alumno.id, clases: this.clase } })
+    },
+    async es_tutor (alumno) {
+      // console.log(alumno)
+      // console.log(this.clase)
+      // console.log(this.tutor)
+      const res = await this.ver_tutor()
+      if (res === 250) {
+        this.$router.push({ name: 'elemento', params: { tabla: 'alumnos', existe: await JSON.stringify(alumno) } })
+      }
+      // this.$router.push()
+    },
+    async ver_tutor () {
+      let token = localStorage.getItem('control')
+      token = JSON.parse(token)
+      const uri = 'http://localhost:4000/api/alumnos/tutor'
+      const respon = await fetch(uri, {
+        method: 'POST',
+        headers: {
+          authorization: `bearer ${token.token}`,
+          'Content-type': 'application/json; charset=UTF-8'
+        },
+        body: JSON.stringify({
+          campos: { // agregar otros filtros
+            profesor: this.tutor.id
+          }
+        })
+      })
+      // console.log(respon.status)
+      return respon.status
     }
   },
   mounted () {

@@ -42,7 +42,7 @@
       </div>
     </div>
     <div class="row" v-if="s_tutor && semana_selec && clase_selec" :key="s_semana">
-      <panel-control :semana_selec="semana_selec.id" :clase="clase_selec.id_clases" :clase_curso="clase_selec.id"/> <!--falta agregar los select de semana -->
+      <panel-control :semana_selec="semana_selec.id" :clase="clase_selec.id_clases" :clase_curso="clase_selec.id" :tutor="val_tutor"/> <!--falta agregar los select de semana -->
     </div>
   </div>
   <!-- {{clase_selec}} -->

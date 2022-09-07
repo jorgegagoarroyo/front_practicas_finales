@@ -46,7 +46,7 @@ export default {
       this.est = x
       console.log('estado ', this.est)
     },
-    async sele () {
+    sele () {
       console.log('sele ', this.val, this.est)
       this.estado(false)
       // this.est = false

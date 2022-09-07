@@ -99,15 +99,17 @@ export default {
     },
     async editar_elemento (elemento) {
       const element = await JSON.stringify(elemento)
-      // console.log(`editar ${element}`)
+      console.log(`editar ${element}`)
+      console.log(this.edits)
+      console.log(this.deletes)
       // console.log(elemento)
       this.$router.push({ name: 'elemento', params: { tabla: this.tabla, existe: element, editar: this.edits, borrar: this.deletes } })
       // llamara funcion para editar ese elemento
     },
     async eliminar_elemento (elemento) {
-      console.log('eliminar')
-      console.log(elemento)
-      console.log(this.tabla)
+      // console.log('eliminar')
+      // console.log(elemento)
+      // console.log(this.tabla)
       const uri = `http://localhost:4000/api/${this.tabla}`
       let temp = { id: elemento.id }
       temp = { campos: temp }
@@ -141,11 +143,15 @@ export default {
       this.token = token
     },
     async load () {
-      this.elemento_nombre = this.tabla.slice(0, -1)
-      await this.get_token()
-      this.cambiar_botones()
-      await this.leer_campos()
-      await this.leer_elementos()
+      try {
+        this.elemento_nombre = this.tabla.slice(0, -1)
+        await this.get_token()
+        this.cambiar_botones()
+        await this.leer_campos()
+        await this.leer_elementos()
+      } catch {
+        console.log('')
+      }
     }
   },
   async mounted () {
