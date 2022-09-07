@@ -108,7 +108,7 @@ export default {
     // console.log('info')
     this.get_datos()
     // console.log('dia ', this.dia)
-    console.log('elemento ', this.elemento)
+    // console.log('elemento ', this.elemento)
   },
   watch: {
     elemento: function () {

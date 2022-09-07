@@ -7,6 +7,7 @@ import PanelControl from '../components/PanelControl.vue'
 import FiltoControl from '../components/FiltroControl.vue'
 import BlankComp from '../components/BlankComp.vue'
 import IngresarEditar from '../components/IngresarEditar.vue'
+import ListaAsistencias from '../components/ListaAsistencias.vue'
 // import ListaView from '../views/ListaView.vue'
 
 const routes = [
@@ -47,6 +48,12 @@ const routes = [
     path: '/elemento',
     name: 'elemento',
     component: IngresarEditar,
+    props: true
+  },
+  {
+    path: '/asistencias',
+    name: 'asistencias',
+    component: ListaAsistencias,
     props: true
   }
 ]

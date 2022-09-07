@@ -6,24 +6,26 @@
           <thead>
             <tr>
             <th scope="col" class="col-3 "> alumnos </th>
-            <template v-for="dia in semana" >
+            <template v-for="dia in semana">
+              <!-- <tr>
+                <th colspan=5 class="border">hola</th>
+              </tr> -->
+              <!-- <tr> -->
               <template v-for="resul in dia">
                 <th scope="col" v-for="(hora, index) in resul" :key="index">
                   <info-panel :elemento="hora" v-if="cargado" />
                 </th>
               </template>
+              <!-- </tr> -->
             </template>
+            <th class="verticaltext" >asis</th>
+            <th>faltas</th>
           </tr>
           </thead>
           <tbody v-if="listado">
             <tr v-for="(alumno, index) in datos" :key="index" >
               <td class="border-5-r">{{alumno.apellido1}} {{alumno.apellido2}}, {{alumno.nombre}}</td>
-              <!-- <template v-for="dia in semana" >
-                <td v-for="(hora, index) in dia" :key="index">
-                  <casilla-asistencia :alumno="alumno" :horario="hora" :valores="codigos" />
-                </td>
-              </template> -->
-              <template v-for="(dia, key) in semana" >
+              <template v-for="(dia, key) in semana" :key="key">
                   <template v-for="resul in dia">
                     <template v-for="(hora, index) in resul" :key="index">
                       <td v-if="feriados[key]" class="bg-light">  </td>
@@ -33,6 +35,12 @@
                     </template>
                   </template>
                 </template>
+                <td @dblclick="datos_asistencia(alumno)">
+                  <cantidad-asistencia :alumno="alumno" :clase="clase"/>
+                </td>
+                <td @dblclick="datos_asistencia(alumno)">
+                  <cantidad-asistencia :alumno="alumno" :clase="clase" :faltas="true"/>
+                </td>
             </tr>
           </tbody>
         </table>
@@ -47,11 +55,13 @@
 <script>
 import CasillaAsistencia from './CasillaAsistencia.vue'
 import InfoPanel from './InfoPanel.vue'
+import CantidadAsistencia from './CantidadAsistencias.vue'
 export default {
   name: 'PanelControl',
   components: {
     CasillaAsistencia,
-    InfoPanel
+    InfoPanel,
+    CantidadAsistencia
   },
   data () {
     return {
@@ -283,6 +293,11 @@ export default {
       respon = respon.resul
       this.codigos = respon
       // console.log(this.codigos)
+    },
+    datos_asistencia (alumno) {
+      // console.log('datos asistencia')
+      // console.log(this.clase)
+      // this.$router.push({ name: 'asistencias', params: { alumnos: alumno.id, clases: this.clase } })
     }
   },
   mounted () {
@@ -314,5 +329,9 @@ export default {
   background-color: gray;
   color: beige;
 }
-
+.verticaltext{
+  width:1px;
+  word-wrap: break-word;
+  white-space:pre-wrap;
+  }
 </style>
