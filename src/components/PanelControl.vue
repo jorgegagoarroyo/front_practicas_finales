@@ -5,7 +5,15 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-            <th scope="col" class="col-3 "> alumnos </th>
+            <th scope="col" class="col-3 " rowspan="2"> alumnos </th>
+            <template v-for="(dia, key) in semana" :key="key">
+              <th :colspan="spans[key]" class="bg-secondary">{{key}}</th>
+            </template>
+            <th class="verticaltext" rowspan="2">asis</th>
+            <th rowspan="2">faltas</th>
+            </tr>
+            <tr>
+            <!-- <th scope="col" class="col-3 "> alumnos </th> -->
             <template v-for="dia in semana">
               <!-- <tr>
                 <th colspan=5 class="border">hola</th>
@@ -18,8 +26,8 @@
               </template>
               <!-- </tr> -->
             </template>
-            <th class="verticaltext" >asis</th>
-            <th>faltas</th>
+            <!-- <th class="verticaltext" >asis</th> -->
+            <!-- <th>faltas</th> -->
           </tr>
           </thead>
           <tbody v-if="listado">
@@ -73,7 +81,8 @@ export default {
       cargado: false,
       listado: false,
       feriados: {},
-      temp: {}
+      temp: {},
+      spans: {}
     }
   },
   props: {
@@ -111,6 +120,7 @@ export default {
     async get_dias (lista) { // falta agregar el modulo
       let token = localStorage.getItem('control')
       const temp = {}
+      const span = {}
       token = JSON.parse(token)
       // const lista = this.dias
       // lista.forEach(element => {
@@ -118,21 +128,25 @@ export default {
         // console.log('lista ', lista[element])
         this.feriados[lista[element].fecha] = lista[element].festivo
         const date = lista[element].fecha
-        const hora = await this.get_horas(lista[element], token)
+        const hora = await this.get_horas(lista[element], token, date)
         if (await hora) {
-          temp[date] = hora
+          temp[date] = hora.res
+          span[date] = hora.temp
         }
       // })
       }
-      // console.log('temp ', temp)
+      // console.log(span)
+      this.spans = span
+      // console.log(this.spans)
+      console.log('temp ', temp)
       this.semana = temp
       this.ok_clase(token)
       // this.cargado = true
       // console.log('semana ', this.semana)
     },
-    async get_horas (element, token) {
+    async get_horas (element, token, date) {
       const uri = 'http://localhost:4000/api/horarios/get'
-      // let temp = ''
+      let temp = 0
       let res = await fetch(uri, {
         method: 'POST',
         headers: {
@@ -150,7 +164,9 @@ export default {
       // console.log(res)
       // res = res.resul
       if (res.resul.length > 0) {
-        return res
+        temp = res.resul.length
+        console.log(temp)
+        return { res, temp }
       }
       // return false
     },
