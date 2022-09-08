@@ -3,9 +3,9 @@
   <!-- <div class="row"> -->
     <!-- <div class="table table-borderer">{{tabla}}</div>
   </div> -->
-  <div class="row">
+  <div class="row" >
     <div class="col m-2">
-      <button class="btn btn-secondary col-2" @click="editar_elemento(dato)">Agregar {{elemento_nombre}}</button>
+      <button v-if="creador" class="btn btn-secondary col-2" @click="editar_elemento(dato)">Agregar {{elemento_nombre}}</button>
     </div>
   </div>
     <div class="row">
@@ -59,7 +59,8 @@ export default {
       titulos: [],
       datos: [],
       token: '',
-      elemento_nombre: ''
+      elemento_nombre: '',
+      creador: false
     }
   },
   methods: {
@@ -138,7 +139,12 @@ export default {
       let token = localStorage.getItem('control')
       token = JSON.parse(token)
       if (!token) {
-        this.load()
+        // this.load()
+        this.$router.push('/')
+      }
+      // console.log(token)
+      if (token.rol === 'admin' || token.rol === 'secretaria') {
+        this.creador = true
       }
       this.token = token
     },
